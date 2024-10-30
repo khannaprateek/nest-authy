@@ -1,99 +1,194 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NEST-AUTHY
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+A NestJS authentication and authorization system with role-based access control, built using TypeScript and featuring JWT authentication strategy.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Project Overview
 
-## Description
+This project implements a secure authentication and authorization system using NestJS framework with the following key features:
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- JWT and Local authentication strategies
+- Role-based access control (RBAC)
+- TypeORM integration with PostgreSQL
+- Swagger API documentation
+- Modular architecture with clear separation of concerns
 
-## Project setup
+## Project Structure
 
-```bash
-$ npm install
+```
+src/
+├── dtos/                 # Data Transfer Objects
+│   ├── auth-response.dto.ts
+│   ├── create-user.dto.ts
+│   ├── login.dto.ts
+│   └── user-response.dto.ts
+├── entities/            # TypeORM entities
+│   └── user.entity.ts
+├── guards/              # Authentication & Authorization guards
+│   ├── jwt-auth.guard.ts
+│   ├── local-auth.guard.ts
+│   └── roles.guard.ts
+├── modules/
+│   ├── auth/           # Authentication module
+│   │   ├── decorators/
+│   │   ├── strategies/
+│   │   ├── auth.controller.ts
+│   │   ├── auth.module.ts
+│   │   └── auth.service.ts
+│   └── user/           # User management module
+│       ├── user.controller.ts
+│       ├── user.module.ts
+│       └── user.service.ts
+└── util/               # Utility functions and constants
+    ├── constants.ts
+    └── enum.ts
 ```
 
-## Compile and run the project
+## Prerequisites
+
+- Node.js >= 14.x
+- PostgreSQL >= 12
+- npm or yarn
+- TypeScript >= 4.x
+
+## Installation & Setup
+
+1. Install dependencies:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
+2. Configure environment variables by creating a `.env` file in the root directory:
+
+```env
+# Database Configuration
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=your_username
+DB_PASSWORD=your_password
+DB_NAME=nest_authy_db
+
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key
+
+```
+
+3. Start the development server:
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm run start:dev
 ```
 
-## Deployment
+## API Documentation
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Access the Swagger documentation at: `http://localhost:3000/um-api`
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### Key Endpoints
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+#### Authentication
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+- `POST /auth/login` - Authenticate user
+- `POST /auth/register` - Register new user
 
-## Resources
+#### User Management
 
-Check out a few resources that may come in handy when working with NestJS:
+- `GET /users` - List all users (Protected: Admin)
+- `GET /users/:id` - Get user details (Protected: Admin, Owner)
+- `PATCH /users/:id` - Update user (Protected: Admin, Owner)
+- `DELETE /users/:id` - Delete user (Protected: Admin)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+## Implementation Details
 
-## Support
+### Authentication Flow
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+1. **Registration**:
 
-## Stay in touch
+   - User data validation using DTOs
+   - Password hashing using bcrypt
+   - User creation in database
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+2. **Login**:
+
+   - Credentials validation using LocalStrategy
+   - JWT token generation
+   - Return of auth response with token
+
+3. **Protected Routes**:
+   - JWT token validation using JwtStrategy
+   - Role verification using RolesGuard
+   - Request processing if authorized
+
+### Design Decisions & Assumptions
+
+1. **Authentication Strategy**:
+
+   - Chose JWT for stateless authentication
+   - Implemented both local and JWT strategies for flexibility
+   - Assumed short-lived tokens without refresh token mechanism
+
+2. **Database Design**:
+
+   - Used TypeORM for database operations
+   - Implemented soft delete for user records
+   - Assumed single-role per user design
+
+3. **Security Measures**:
+   - Password hashing using bcrypt
+   - Role-based access control
+   - Request validation using class-validator
+   - TypeORM parameterized queries for SQL injection prevention
+
+## Development Challenges & Solutions
+
+1. **Role-Based Authorization**:
+
+   - Challenge: Implementing flexible role checks
+   - Solution: Custom RolesGuard with decorator-based role definition
+
+2. **Type Safety**:
+
+   - Challenge: Maintaining type safety across DTOs and entities
+   - Solution: Strict TypeScript configuration and shared interfaces
+
+3. **Error Handling**:
+   - Challenge: Consistent error responses
+   - Solution: Global exception filter with standardized error format
+
+## Future Improvements
+
+1. **Authentication Enhancements**:
+
+   - Implement refresh token mechanism
+   - Add OAuth2.0 support
+   - Implement MFA (Multi-Factor Authentication)
+
+2. **Security Improvements**:
+
+   - Add rate limiting
+   - Implement request logging
+   - Add IP-based blocking
+
+3. **Feature Additions**:
+
+   - Password reset functionality
+   - Email verification
+   - User profile management
+   - Activity logging
+
+4. **Technical Improvements**:
+   - Add comprehensive test coverage
+   - Implement caching layer
+   - Add Docker support
+   - Implement CI/CD pipeline
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+This project is licensed under the MIT License - see the LICENSE file for details
